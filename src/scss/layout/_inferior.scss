@@ -18,5 +18,32 @@
   &:last-of-type {
     margin-bottom: 0;
   }
+}
 
+
+.texto-entrada {
+ a {
+  color: $negro;
+  margin-top: 2rem;
+  display: block;
+  @include tablet {
+    margin-top: 0;
+  }
+ }
+ h4 {
+  margin: 0;
+  line-height: 1.4;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 15rem;
+    height: .5rem;
+    background-color: $verde;
+    margin-top: 1rem;
+  }
+ }
+ span {
+  color: $amarillo;
+ } 
 }
