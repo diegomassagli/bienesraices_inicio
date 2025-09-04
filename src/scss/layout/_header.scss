@@ -34,9 +34,10 @@
   justify-content: space-between;  /* como el header ajusta la altura al contenido, no baja. por eso le pongo en tablet los 70rem's  */
   
   h1 {
-    text-align: left;
+    text-align: center;
     color: $blanco;
     font-weight: $bold;
     max-width: 60rem;
+    margin: 0 auto;
   }
 }

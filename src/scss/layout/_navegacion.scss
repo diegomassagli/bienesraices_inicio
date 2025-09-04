@@ -1,3 +1,28 @@
+.derecha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include tablet {
+    align-items: flex-end;
+  }
+
+  .dark-mode-boton {
+    width: 3rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    filter: invert(100%);
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    @include tablet {
+      margin-top: 0;
+    }
+  }
+}
+
 
 .barra {
   display: flex;
@@ -7,15 +32,22 @@
   @include tablet {
     flex-direction: row;
     justify-content: space-between;
+    align-items: flex-end;
   }
 }
 
 .navegacion {
-  display: none;    
+  // display: none;    como no se puede animar, la cambio por visibility
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  transition: visibility .3s ease-in-out, opacity .5s linear, height .5s linear;
 
   @include tablet {
     display: flex;
     align-items: center;
+    opacity: 1;
+    visibility: visible;
   }
 
   a {
@@ -33,7 +65,6 @@
         ;
       }
     }
-
   }
 }
 
@@ -43,10 +74,25 @@
   @include tablet {
     display: none;
   }
-
   img {
     width: 5rem;
-
   }
+}
 
+
+.mostrar {
+  // esta es una forma, no funciona bien
+  // display: block;  esto funciona, pero si cambio a dispositivo mas grande queda en block, no flex y se encima uno arriba del otro
+
+  // esta es otra forma, y funciona bien, pero no se puede animar
+  // display: flex;
+  // flex-direction: column;
+  // @include tablet {
+  //   flex-direction: row;
+  // }
+
+  // tercer forma
+  visibility: visible;
+  opacity: 1;
+  height: auto;
 }
