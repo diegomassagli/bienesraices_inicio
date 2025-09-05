@@ -24,7 +24,7 @@
   $wc = '';
   $estacionamiento = '';
   $vendedores_Id = '';
-  $creado = date('Y/m/d');
+  $creado = '';
 
   // Ejecutar el codigo despues de que el usuario envia el formulario
   if($_SERVER["REQUEST_METHOD"] === "POST") {  // para asegurarme que no venga vacio, antes de preguntar por los datos
@@ -50,7 +50,7 @@
     $vendedores_Id = mysqli_real_escape_string($db, $_POST['vendedor']);
     // Asignar files hacia una variable
     $imagen = $_FILES['imagen'];
-
+    $creado = date('Y/m/d');  
 
     if(!$titulo) {
       $errores[] = "Debes añadir un titulo";
@@ -77,9 +77,9 @@
       $errores[] = "Elije  una imagen, es obligatoria";
     }    
     // validar por tamaño por ejemplo maximo 100Kb
-    $medida = 1024 * 100;
+    $medida = 1024 * 1000;
     if($imagen['size'] > $medida || $imagen['error']) {
-      $errores[] = "Elije  una imagen mas pequeña, el maximo son 100 Kb";
+      $errores[] = "Elije  una imagen mas pequeña, el maximo son 1Mb";
     }    
 
 
@@ -89,9 +89,22 @@
 
     // Revisar que el arreglo de errores este vacio
     if( empty( $errores ) ) {
+
+      // subida de archivos
+      // crear carpeta
+      $carpetaImagenes = '../../imagenes/';
+      if( !is_dir($carpetaImagenes) ) {
+        mkdir($carpetaImagenes);        
+      }
+      // generar un nombre unico
+      $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";
+
+      // subir la imagen
+      move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen );     
+
       // Insertar en la base de datos 
-      $query = " INSERT INTO propiedades (titulo, precio, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_Id) 
-      VALUES ('$titulo', '$precio', '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedores_Id') ";
+      $query = " INSERT INTO propiedades (titulo, precio, imagen, descripcion, habitaciones, wc, estacionamiento, creado, vendedores_Id) 
+      VALUES ('$titulo', '$precio', '$nombreImagen',  '$descripcion', '$habitaciones', '$wc', '$estacionamiento', '$creado', '$vendedores_Id') ";
   
       //echo $query;
   
@@ -99,7 +112,7 @@
   
       if($resultado) {
         // redireccionar al usuario FUNCIONA SOLAMENTE SI NO LLEGASTE A MOSTRAR NINGUN ELEMENTO HTML, SINO NO FUNCIONA
-        header('Location: /admin');
+        header('Location: /admin?resultado=1');
       }
     }
   }
