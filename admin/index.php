@@ -1,4 +1,12 @@
 <?php
+  // CONTROLA SI EL USUARIO ESTA AUTENTICADO SINO DEVUELVE A PAGINA INICIAL
+  require '../includes/funciones.php'; 
+  $auth = estaAutenticado();
+
+  if( !$auth ) {
+    header('Location: /');
+  }
+
 
   // Base de Datos (importar la conexion
   require ('../includes/config/database.php');
@@ -35,7 +43,6 @@
   }
 
   // incluye un template
-  require '../includes/funciones.php'; 
   incluirTemplate('header');
 ?>
 
