@@ -1,6 +1,4 @@
-<?php
-  // Importar la conexion  (notar que este template va a estar metido en index. por eso esa ruta!! sino tendria que usar __DIR__ . 'includes/config/database.php)
-  require 'includes/config/database.php'; // sino tendria que usar __DIR__ . '/../config/database.php)  porque __DIR__ da la ruta hasta el template
+<?php  
   $db = conectarDB();
 
   // consultar los registros

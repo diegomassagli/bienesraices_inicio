@@ -6,8 +6,7 @@
     header('Location: /');      // si no hay un id valido, lo devuelvo a la pagina principal
   }
 
-  // Base de Datos (importar la conexion
-  require ('includes/config/database.php');
+  require 'includes/app.php';   
   $db = conectarDB();  
 
   // escribir el query 
@@ -21,7 +20,6 @@
   }
   $propiedad = mysqli_fetch_assoc($resultado);
 
-  require 'includes/funciones.php'; 
   incluirTemplate('header');
 ?>
 
