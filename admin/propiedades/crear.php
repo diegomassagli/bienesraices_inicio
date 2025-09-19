@@ -35,30 +35,6 @@
     $propiedad = new Propiedad($_POST);
     $propiedad->guardar();
 
-    debuguear($propiedad);
-
-    // echo "<pre>";
-    // var_dump($_POST);
-    // echo "</pre>";
-
-    // // para leer las imagenes o archivos subidos no se usa la superglobal $_POST sin $_FILES (y necesito en enctype en el form)
-
-    // echo "<pre>";
-    // var_dump($_FILES);
-    // echo "</pre>";
-
-    
-    // evita inyeccion sql mysqli_real_escape_string  (ademas deberiamos  utilizar FILTER_VALIDATE Y FILTER_SANITIZE)
-    $titulo = mysqli_real_escape_string($db, $_POST['titulo']);
-    $precio = mysqli_real_escape_string($db, $_POST['precio']);
-    $descripcion = mysqli_real_escape_string($db, $_POST['descripcion']);
-    $habitaciones = mysqli_real_escape_string($db, $_POST['habitaciones']);
-    $wc = mysqli_real_escape_string($db, $_POST['wc']);
-    $estacionamiento = mysqli_real_escape_string($db, $_POST['estacionamiento']);
-    $vendedores_Id = mysqli_real_escape_string($db, $_POST['vendedores_id']);
-    // Asignar files hacia una variable
-    $imagen = $_FILES['imagen'];
-    $creado = date('Y/m/d');  
 
     if(!$titulo) {
       $errores[] = "Debes añadir un titulo";

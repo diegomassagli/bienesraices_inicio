@@ -10,6 +10,7 @@ $db = conectarDB();
 
 use App\Propiedad;
 
-Propiedad::setDB($db);         // al se un metodo static no requiere instanciarse
+Propiedad::setDB($db);         // al ser un metodo static no requiere instanciarse y queda disponible para todos los objetos que se creen y no cambia.
+
 
 
