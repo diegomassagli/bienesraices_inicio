@@ -1,12 +1,10 @@
 <?php
   require '../../includes/app.php'; 
   use App\Propiedad;
+  use Intervention\Image\Drivers\Gd\Driver;
+  use Intervention\Image\ImageManager as Image;
 
   estaAutenticado();
-
-  // Base de Datos
-  $db = conectarDB();  
-
 
   // Consultar para obtener los vendedores
   $consulta = "SELECT * FROM vendedores";
@@ -18,8 +16,10 @@
 
 
   // Inicializo arreglo con mensajes de error y variables del formulario
-  $errores = [];
+  // $errores = [];
+  $errores = Propiedad::getErrores();
 
+  
   $titulo = '';
   $precio = '';
   $descripcion = '';
@@ -33,65 +33,31 @@
   if($_SERVER["REQUEST_METHOD"] === "POST") {  // para asegurarme que no venga vacio, antes de preguntar por los datos
 
     $propiedad = new Propiedad($_POST);
-    $propiedad->guardar();
 
+    // generar un nombre unico
+    $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";    
+    IF($_FILES['imagen']['tmp_name']) {                               // si tenemos una imagen entonces...
+      $manager = new Image(Driver::class);                            // leo la imagen y le aplico metodos de transformacion propios de intervetion
+      $imagen = $manager->read($_FILES['imagen']['tmp_name'])->cover(800, 600, 'center');
+      $propiedad->setImagen($nombreImagen);      
+    }
+    
+    $errores = $propiedad->validar();
 
-    if(!$titulo) {
-      $errores[] = "Debes añadir un titulo";
-    }
-    if(!$precio) {
-      $errores[] = "El precio es obligatorio";
-    }
-    if( strlen( $descripcion ) < 50 ) {
-      $errores[] = "La descripcion es obligatoria y debe tener al menos 50 caracteres";
-    }
-    if(!$habitaciones ) {
-      $errores[] = "El numero de habitaciones es obligatorio";
-    }
-    if(!$wc ) {
-      $errores[] = "El numero de baños es obligatorio";
-    }
-    if(!$estacionamiento ) {
-      $errores[] = "El numero de lugares de estacionamiento es obligatorio";
-    }        
-    if(!$vendedores_Id ) {
-      $errores[] = "Elije  un vendedor";
-    }    
-    if(!$imagen['name'] ) {
-      $errores[] = "Elije  una imagen, es obligatoria";
-    }    
-    // validar por tamaño por ejemplo maximo 100Kb
-    $medida = 1024 * 1000;
-    if($imagen['size'] > $medida || $imagen['error']) {
-      $errores[] = "Elije  una imagen mas pequeña, el maximo son 1Mb";
-    }    
+    // debuguear($_FILES);
 
-
-    // echo "<pre>";
-    // var_dump($errores);
-    // echo "</pre>";
-
-    // Revisar que el arreglo de errores este vacio
     if( empty( $errores ) ) {
-
+      
       // subida de archivos
-      // crear carpeta
-      $carpetaImagenes = '../../imagenes/';
-      if( !is_dir($carpetaImagenes) ) {
-        mkdir($carpetaImagenes);        
+      if( !is_dir(CARPETA_IMAGENES) ) {
+        mkdir(CARPETA_IMAGENES);        
       }
-      // generar un nombre unico
-      $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";
+     
+      // Guarda la imagen en el servidor (save metodo de Intervention)
+      $imagen->save(CARPETA_IMAGENES . $nombreImagen);      
+      
+      $resultado = $propiedad->guardar();              
 
-      // subir la imagen
-      move_uploaded_file($imagen['tmp_name'], $carpetaImagenes . $nombreImagen );     
-
-
-  
-      //echo $query;
-  
-      $resultado = mysqli_query($db, $query);
-  
       if($resultado) {
         // redireccionar al usuario FUNCIONA SOLAMENTE SI NO LLEGASTE A MOSTRAR NINGUN ELEMENTO HTML, SINO NO FUNCIONA
         header('Location: /admin?resultado=1');

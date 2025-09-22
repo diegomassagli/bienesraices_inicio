@@ -29,11 +29,12 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
       $auth = password_verify($password, $usuario['password']);
       if( $auth ) {
         // autenticar al usuario
-        session_start();
+        session_start();                
+        
         // llenar el arreglo de la sesion
         $_SESSION['usuario'] = $usuario['email'];
         $_SESSION['login'] = true;
-
+        
         // una vez que el usuario esta logueado redirigirlo a la pagina inicial
         
         header('Location: /admin');

@@ -8,6 +8,11 @@
     protected static $db;
     protected static $columnasDB = ['id', 'titulo', 'precio', 'imagen', 'descripcion', 'habitaciones', 'wc', 'estacionamiento', 'creado', 'vendedores_id'];
 
+
+    // Errores o Validacion (protected porque solo la clase es la que puede decir si es valido o no y static porque no requiero instanciarlo en otro lado)
+    protected static $errores = [];
+    
+
     public $id;
     public $titulo;
     public $precio;
@@ -30,7 +35,7 @@
       $this->id = $args['id'] ?? '';
       $this->titulo = $args['titulo'] ?? '';
       $this->precio = $args['precio'] ?? '';
-      $this->imagen = $args['imagen'] ?? 'imagen.jpg';
+      $this->imagen = $args['imagen'] ?? '';
       $this->descripcion = $args['descripcion'] ?? '';
       $this->habitaciones = $args['habitaciones'] ?? '';
       $this->wc = $args['wc'] ?? '';
@@ -58,12 +63,9 @@
       $query .= join("', '", array_values($atributos));
       $query .= " ') ";
 
-      // debuguear($query);
-
       // self:: porque esta como static
-      $resultado = self::$db->query($query);
-
-      debuguear($resultado);
+      $resultado = self::$db->query($query);      
+      return $resultado;
     }
 
 
@@ -87,6 +89,82 @@
         $sanitizado [$key] = self::$db->escape_string($value);
       }
       return $sanitizado;
+    }
+
+    // Validacion
+    public static function getErrores() {
+      return self::$errores;
+    }
+
+
+    public function validar() {
+      if(!$this->titulo || mb_strlen($this->titulo, 'UTF-8') > 45 ) {
+        self::$errores[] = "Debes añadir un titulo y que sea inferior a 45 caracteres";
+      }
+      if(!$this->precio) {
+        self::$errores[] = "El precio es obligatorio";
+      }
+      if( strlen( $this->descripcion ) < 50 ) {
+        self::$errores[] = "La descripcion es obligatoria y debe tener al menos 50 caracteres";
+      }
+      if(!$this->habitaciones ) {
+        self::$errores[] = "El numero de habitaciones es obligatorio";
+      }
+      if(!$this->wc ) {
+       self:: $errores[] = "El numero de baños es obligatorio";
+      }
+      if(!$this->estacionamiento ) {
+        self::$errores[] = "El numero de lugares de estacionamiento es obligatorio";
+      }        
+      if(!$this->vendedores_id ) {
+        self::$errores[] = "Elije  un vendedor";
+      }    
+      if(!$this->imagen) {
+        self::$errores[] = "Elije  una imagen, es obligatoria";
+      }    
+      return self::$errores;
+    }
+    
+    public function setImagen($imagen) {
+      if($imagen) {
+        $this->imagen = $imagen;
+      }
+    }
+
+    // Lista todas las propiedades
+    public static function all() {
+      $query = "SELECT * FROM propiedades";
+      
+      $resultado = self::consultarSQL($query);
+      return $resultado;      
+    }
+
+    public static function consultarSQL($query) {
+      // consultar la BD
+      $resultado = self::$db->query($query);
+
+      // iterar los resultados
+      $array = [];
+      while ($registro = $resultado->fetch_assoc()) {
+        $array[] = self::crearObjeto($registro);
+      }      
+
+      // liberar la memoria
+      $resultado->free();
+
+      // retornar los resultados
+      return $array;
+    }
+                                                                 // RECUERDO QUE ACTIVE RECORD PIDE OBJETOS !! NO ARREGLOS !!
+    protected static function crearObjeto($registro) {          // este codigo crea un objeto en memoria en base a los resultados de la bd
+      $objeto = new self;                                      // esto significa crear un nuevo objeto de la clase actual
+
+      foreach ( $registro as $key => $value ) {
+        if( property_exists( $objeto, $key ) ) {
+          $objeto->$key = $value;
+        }
+      }
+      return $objeto;
     }
 
   }

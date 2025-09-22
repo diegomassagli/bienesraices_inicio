@@ -1,11 +1,6 @@
 <?php
-  require '../../includes/funciones.php'; 
-  $auth = estaAutenticado();
-
-  if( !$auth ) {
-    header('Location: /');
-  }
-
+  require '../../includes/app.php'; 
+  estaAutenticado();
 
   // Validar por Id valido
   $id = $_GET['id'];
@@ -13,10 +8,6 @@
   if(!$id) {
     header('Location: /admin');
   }
-
-  // Base de Datos
-  require ('../../includes/config/database.php');
-  $db = conectarDB();  
 
   // obtener los datos de la propiedad a actualizar
   $consulta = "SELECT * FROM propiedades WHERE id={$id}";
