@@ -41,7 +41,7 @@
       $this->wc = $args['wc'] ?? '';
       $this->estacionamiento = $args['estacionamiento'] ?? '';
       $this->creado = date('Y/m/d');
-      $this->vendedores_id = $args['vendedores_id'] ?? '';
+      $this->vendedores_id = $args['vendedores_id'] ?? 1;
     }
 
 
@@ -131,13 +131,21 @@
       }
     }
 
-    // Lista todas las propiedades
+    // Lista todos los registros
     public static function all() {
       $query = "SELECT * FROM propiedades";
       
       $resultado = self::consultarSQL($query);
       return $resultado;      
     }
+
+    // Busca un registro por su ID
+    public static function find($id) {
+      $query = "SELECT * FROM propiedades WHERE id={$id}";      
+      $resultado = self::consultarSQL($query);      
+      return array_shift($resultado);      // devuelve la primer posicion del arreglo que en este caso es el objeto con todas los valores de esta propiedad
+    }
+
 
     public static function consultarSQL($query) {
       // consultar la BD
