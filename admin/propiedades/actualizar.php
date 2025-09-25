@@ -21,11 +21,6 @@ use Intervention\Image\ImageManager as Image;
   $consulta = "SELECT * FROM vendedores";
   $resultado = mysqli_query($db, $consulta);
 
-  // echo "<pre>";
-  // var_dump($_SERVER["REQUEST_METHOD"]);
-  // echo "</pre>";
-
-
   // Inicializo arreglo con mensajes de error y variables del formulario
   $errores = Propiedad::getErrores();
 
@@ -52,31 +47,9 @@ use Intervention\Image\ImageManager as Image;
 
     // Revisar que el arreglo de errores este vacio
     if( empty( $errores ) ) {      
-
-
-
-      exit;
-
-      // Insertar en la base de datos 
-      $query = " UPDATE propiedades SET 
-        titulo='" .$titulo. "', 
-        precio='" .$precio. "', 
-        imagen='" .$nombreImagen. "', 
-        descripcion='" .$descripcion. "', 
-        habitaciones=" .$habitaciones. ", 
-        wc=" .$wc. ", 
-        estacionamiento="  .$estacionamiento. ", 
-        vendedores_id="  .$vendedores_id. " 
-        WHERE id=" .$id;
-      
-      // echo $query;
-  
-      $resultado = mysqli_query($db, $query);
-  
-      if($resultado) {
-        // redireccionar al usuario FUNCIONA SOLAMENTE SI NO LLEGASTE A MOSTRAR NINGUN ELEMENTO HTML, SINO NO FUNCIONA
-        header('Location: /admin?resultado=2');
-      }
+      // Almacenar la imagen
+      $image->save(CARPETA_IMAGENES . $nombreImagen);
+      $propiedad->guardar();
     }
   }
 

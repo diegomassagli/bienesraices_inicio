@@ -52,12 +52,7 @@
       // Guarda la imagen en el servidor (save metodo de Intervention)
       $imagen->save(CARPETA_IMAGENES . $nombreImagen);      
       
-      $resultado = $propiedad->guardar();              
-
-      if($resultado) {
-        // redireccionar al usuario FUNCIONA SOLAMENTE SI NO LLEGASTE A MOSTRAR NINGUN ELEMENTO HTML, SINO NO FUNCIONA
-        header('Location: /admin?resultado=1');
-      }
+      $propiedad->guardar();              
     }
   }
 

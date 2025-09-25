@@ -32,7 +32,7 @@
 
     public function __construct($args = [])
     {
-      $this->id = $args['id'] ?? '';
+      $this->id = $args['id'] ?? null;
       $this->titulo = $args['titulo'] ?? '';
       $this->precio = $args['precio'] ?? '';
       $this->imagen = $args['imagen'] ?? '';
@@ -45,27 +45,62 @@
     }
 
 
-    public function guardar() {
+    public function guardar() {      
+      if(!is_null($this->id)) {
+        // si hay un id hay que actualizar        
+        $this->actualizar();
+      } else {
+        // si no hay un id, debo crear un nuevo registro
+        $this->crear();
+      }
+    }
 
+
+    public function crear() {
       // Sanitizar los datos
       $atributos = $this->sanitizarAtributos();
-
       // debuguear(array_keys($atributos));   // me devuelve las "claves" del arreglo que son los nombres de las columnas
-
-      // $string = join(', ', array_keys($atributos));  // esta funcion aplana un arreglo y le puedo indicar que separador necesito que ponga
-      // $string = join(', ', array_values($atributos)); // idem pero para los "valores" del arreglo
-      // debuguear($string);
-
       // Insertar en la base de datos 
       $query = " INSERT INTO propiedades ( ";
       $query .= join(', ', array_keys($atributos));
       $query .= " ) VALUES ('"; 
       $query .= join("', '", array_values($atributos));
       $query .= " ') ";
-
       // self:: porque esta como static
       $resultado = self::$db->query($query);      
-      return $resultado;
+      if($resultado) {
+        header('Location: /admin?resultado=1');
+      }
+    }
+
+    public function actualizar() {
+      // Sanitizar los datos
+      $atributos = $this->sanitizarAtributos();
+      $valores = [];
+      foreach($atributos as $key => $value) {
+        $valores[] = "{$key}='{$value}'";
+      }
+      //debuguear(join(', ', $valores) );
+      $query = " UPDATE propiedades SET ";
+      $query .=  join(', ', $valores);
+      $query .= " WHERE id='" . self::$db->escape_string ($this->id) . "'";
+      $query .= " LIMIT 1 ";
+        
+      $resultado = self::$db->query($query);
+      if($resultado) {
+        header('Location: /admin?resultado=2');
+      }
+    }
+
+    // Eliminar un registro
+    public function eliminar() {
+      $query = "DELETE FROM propiedades WHERE id = " . self::$db->escape_string($this->id) . " LIMIT 1"; //uso escape_string porque ese id viene de la url y alguien lo puede modificar !!!
+
+      $resultado = self::$db->query($query);
+      if($resultado) {
+        $this->borrarImagen();
+        header('location: /admin?resultado=3');
+      }
     }
 
 
@@ -127,19 +162,24 @@
     
     public function setImagen($imagen) {
       // Elimina la imagen previa (se da cuenta si habia una, si tengo un "id", porque eso significa que estoy editando, no creando)¨
-
-      if($this->id) {
-        // verificar el existe el archivo
-        $existeArchivo = file_exists(CARPETA_IMAGENES . $this->$imagen);
-        if($existeArchivo) {
-          unlink(CARPETA_IMAGENES . $this->$imagen);
-        }
+      if( !is_null($this->id) ) {
+        $this->borrarImagen();
       }
       // asignar al atributo de imagen, el nombre de la imagen
       if($imagen) {
         $this->imagen = $imagen;
       }
     }
+
+    // Borrar imagen
+    public function borrarImagen()  {
+      // verificar el existe el archivo
+      $existeArchivo = file_exists(CARPETA_IMAGENES . $this->imagen);
+      if($existeArchivo) {
+        unlink(CARPETA_IMAGENES . $this->imagen);
+      }      
+    }
+
 
     // Lista todos los registros
     public static function all() {
