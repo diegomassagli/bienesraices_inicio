@@ -24,13 +24,17 @@
   // Ejecutar el codigo despues de que el usuario envia el formulario
   if($_SERVER["REQUEST_METHOD"] === "POST") {  // para asegurarme que no venga vacio, antes de preguntar por los datos
 
-    $propiedad = new Propiedad($_POST);
+    // debuguear($_POST);
+
+    $propiedad = new Propiedad($_POST['propiedad']);
+
+    // debuguear($_FILES['propiedad']);
 
     // generar un nombre unico
     $nombreImagen = md5( uniqid( rand(), true ) ) . ".jpg";    
-    IF($_FILES['imagen']['tmp_name']) {                               // si tenemos una imagen entonces...
+    IF($_FILES['propiedad']['tmp_name']['imagen']) {                               // si tenemos una imagen entonces...
       $manager = new Image(Driver::class);                            // leo la imagen y le aplico metodos de transformacion propios de intervetion
-      $imagen = $manager->read($_FILES['imagen']['tmp_name'])->cover(800, 600, 'center');
+      $imagen = $manager->read($_FILES['propiedad']['tmp_name']['imagen'])->cover(800, 600, 'center');
       $propiedad->setImagen($nombreImagen);      
     }
     

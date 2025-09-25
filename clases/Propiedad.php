@@ -126,6 +126,16 @@
     }
     
     public function setImagen($imagen) {
+      // Elimina la imagen previa (se da cuenta si habia una, si tengo un "id", porque eso significa que estoy editando, no creando)¨
+
+      if($this->id) {
+        // verificar el existe el archivo
+        $existeArchivo = file_exists(CARPETA_IMAGENES . $this->$imagen);
+        if($existeArchivo) {
+          unlink(CARPETA_IMAGENES . $this->$imagen);
+        }
+      }
+      // asignar al atributo de imagen, el nombre de la imagen
       if($imagen) {
         $this->imagen = $imagen;
       }
@@ -133,16 +143,17 @@
 
     // Lista todos los registros
     public static function all() {
-      $query = "SELECT * FROM propiedades";
+      $query = "SELECT * FROM propiedades";   // la consulta devuelve un arreglo
       
-      $resultado = self::consultarSQL($query);
+      $resultado = self::consultarSQL($query);  // aca lo transformo en un objeto
       return $resultado;      
     }
 
     // Busca un registro por su ID
     public static function find($id) {
       $query = "SELECT * FROM propiedades WHERE id={$id}";      
-      $resultado = self::consultarSQL($query);      
+      $resultado = self::consultarSQL($query);        
+      // debuguear(array_shift($resultado));     
       return array_shift($resultado);      // devuelve la primer posicion del arreglo que en este caso es el objeto con todas los valores de esta propiedad
     }
 
@@ -173,6 +184,16 @@
         }
       }
       return $objeto;
+    }
+
+
+    // sincroniza el objeto en memoria con los cambios realizados por el usuario. si tiene algo
+    public function sincronizar( $args = [] ) {
+      foreach($args as $key => $value) {
+        if( property_exists($this, $key) && !is_null($value) ) {
+          $this->$key = $value;
+        }
+      }
     }
 
   }
