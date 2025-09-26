@@ -5,9 +5,12 @@
   estaAutenticado();
 
   use App\Propiedad;
+  use App\Vendedor;
+
 
   // Implementamos un metodo para obtener todas las propiedades usando ActiveRecord
   $propiedades = Propiedad::all();
+  $vendedores = Vendedor::all();
 
   // Muestra mensaje condicional
   $resultado = $_GET['resultado'] ?? null;

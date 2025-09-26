@@ -1,6 +1,7 @@
 <?php
   require '../../includes/app.php'; 
   use App\Propiedad;
+  use App\Vendedor;
   use Intervention\Image\Drivers\Gd\Driver;
   use Intervention\Image\ImageManager as Image;
 
@@ -8,17 +9,10 @@
 
   $propiedad = new Propiedad();   // esto genera la instancia con los placeholders establecidos en el constructor
 
-  // Consultar para obtener los vendedores
-  $consulta = "SELECT * FROM vendedores";
-  $resultado = mysqli_query($db, $consulta);
-
-  // echo "<pre>";
-  // var_dump($_SERVER["REQUEST_METHOD"]);
-  // echo "</pre>";
-
+  // Consulta para obtener todos los vendedores
+  $vendedores = Vendedor::all();
 
   // Inicializo arreglo con mensajes de error y variables del formulario
-  // $errores = [];
   $errores = Propiedad::getErrores();
 
   // Ejecutar el codigo despues de que el usuario envia el formulario
